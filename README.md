@@ -1,5 +1,5 @@
 # PFSSL
-
+[![AAAI](https://img.shields.io/badge/AAAI25-Paper-blue)]()
 Official code for AAAI 2025 paper: Dual-calibrated Co-training Framework for Personalized Federated Semi-Supervised Medical Image Segmentation
 ![](./unrelated/poster.jpg)
 
