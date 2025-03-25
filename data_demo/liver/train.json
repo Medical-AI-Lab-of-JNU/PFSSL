@@ -1,0 +1,62 @@
+{
+    "site1": {
+        "labeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ],
+        "unlabeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ]
+    },
+    "site2": {
+        "labeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ],
+        "unlabeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ]
+    },
+    "site3": {
+        "labeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ],
+        "unlabeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ]
+    },
+    "site4": {
+        "labeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ],
+        "unlabeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ]
+    },
+    "site5": {
+        "labeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ],
+        "unlabeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ]
+    },
+    "site6": {
+        "labeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ],
+        "unlabeled_train": [
+            "A_001/A_001_53.png",
+            "A_001/A_001_54.png"
+        ]
+    }
+}
