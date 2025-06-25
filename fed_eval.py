@@ -48,12 +48,7 @@ def get_args(known=False):
     return args
 
 def load_model(model_weights, in_channels, num_classes, backbone):
-    # model = deeplabv3.__dict__[backbone](in_channels=in_channels, out_channels=num_classes).to(device)
-    # model = UNet2D(3, 2).to(device)
     model = Model(3, 2).to(device)
-    # model = UNet(3,2).to(device)
-    # print('#parameters:', sum(param.numel() for param in model.parameters()))
-    # print(model_weights["state_dict"])
     model.load_state_dict(torch.load(model_weights))
     return model
 
@@ -61,8 +56,6 @@ def fed_eval():
     args = get_args()
     # Project Saving Path
     project_path = args.project + '_{}_{}_{}/'.format(args.backbone, args.ssl, str(args.seed))  # 新版本
-    # project_path = args.project + '_{}_{}/_{}_{}'.format(args.backbone, str(args.seed), args.backbone, str(args.seed))
-    # project_path = args.project
     test_csv_path = os.path.join(project_path, 'eval', 'eval.csv')
     write_csv(test_csv_path, "net_id", ["dice", "miou", "acc", "hd95"])
 
@@ -79,18 +72,12 @@ def fed_eval():
     test_std_avg_list = {'miou':[], 'dice':[], 'auc':[], 'hd95':[], 'assd':[]}
     print('start evaluation')
     for net_id in range(0, data_parties):
-        # if net_id == 1:
-        #     continue
         # Load Data
         _, _, test_local_dl = local_dls[net_id]
         # metric
-        # test_metric_iou = torchmetrics.JaccardIndex(task="multiclass", num_classes=2).to(device)
         test_metric_iou = torchmetrics.JaccardIndex(task="multilabel", num_labels=2).to(device)  # iou
-        # test_metric_acc = torchmetrics.classification.MultilabelAccuracy(num_labels=2).to(device) # todo 废弃
         test_metric_dice = MultDice().to(device)  # dice
         test_metric_auroc = torchmetrics.classification.MultilabelAUROC(num_labels=2, average="macro", thresholds=None).to(device)  # auc/roc
-        # test_metric_iou2 = MeanIoU(num_classes=2, per_class=False, include_background=True).to(device)  # todo 废弃
-        # test_metric_gds = GeneralizedDiceScore(num_classes=2, per_class=False, include_background=True).to(device)  # todo 废弃d
         test_metric_assd = ASSD().to(device)
         test_hd95_list = []
         test_miou_item_list = []
@@ -101,12 +88,6 @@ def fed_eval():
         # Load model    best_test_dice   best_test_iou
         project_path = "./runs/UCMT_UNet_ours_1001"
         weights_path = os.path.join(project_path, str(net_id), 'weights/last.pth')
-        # weights_path = os.path.join(project_path, 'best.pth')
-        # weights_path = "/home/pan/PDL/UCMT/runs_ab/UCMT_UNet_401/weights/best.pth"
-        # weights_path = "/media/pan/Lab-pdl/new-server-data/UCMT/runs_polyp/UCMT_UNet_mt_1003/best.pth"
-        # weights_path = "/home/pan/PDL/UCMT/runs_polyp/UCMT_UNet_mt_1003/best.pth"
-        # weights_path = "./runs/UCMT_UNet_ours_1001"
-        # weights_path = "./runs/best.pth"
         print(weights_path)
         model = load_model(model_weights=weights_path, in_channels=args.in_channels, num_classes=args.num_classes, backbone=args.backbone)
         model.eval()
@@ -126,23 +107,10 @@ def fed_eval():
                 pred_max = torch.argmax(pred_feature, dim=1)  # [1,128,128]
                 pred_test = one_hot(pred_max, num_classes=2).permute(0, 3, 1, 2).contiguous()
 
-                # print(pred_test_data.shape, pred_feature.shape, pred_max.shape)
-
                 pred_test_data_np = np.array(image.data.cpu())
                 df = pd.DataFrame(pred_test_data_np.reshape(-1, pred_test_data_np.shape[-1]))  # 扁平化数组以便保存为CSV
                 # 保存为 CSV 文件
                 df.to_csv("image.csv", index=False, header=False)
-
-
-                # save
-                # pred_max_class = torch.argmax(image, dim=1)  # [batch_size, height, width]
-                # # 选择第一个样本
-                # image_to_save = pred_max_class[0].cpu().numpy()
-                # # 绘制并保存图像
-                # plt.imshow(image_to_save, cmap='gray')  # 使用灰度颜色映射
-                # plt.axis('off')  # 不显示坐标轴
-                # plt.savefig('prediction_image444.png', bbox_inches='tight', pad_inches=0)
-                # break
 
                 # cal metric
                 test_miou = test_metric_iou(pred_test, label_hot)
@@ -151,10 +119,6 @@ def fed_eval():
                 test_hd95 = com_hd(label, pred_max)
                 test_assd = test_metric_assd(pred_test, label_hot)
                 test_hd95_list.append(test_hd95)
-                # test_hd95 = metrics.compute_hausdorff_distance(pred_test, label_hot, percentile=95)
-                # test_hd95_list.append(torch.mean(test_hd95).item())
-                # test_asd = com_assd(pred_feature, label_hot)
-                # print(test_assd)
                 write_csv("./val.csv", 0, [img_name, test_miou, test_dice])
 
                 test_miou_item_list.append(test_miou.item())
